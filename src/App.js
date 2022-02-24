@@ -1,0 +1,77 @@
+import React from "react";
+import LoginForm from "./components/LoginForm";
+import Footer from "./components/Footer";
+import SignupForm from "./components/SignupForm";
+
+class App extends React.Component {
+  state = {
+    authed: false,
+    asNGO: false,
+  };
+
+  componentDidMount() {
+    //check the existence of token in local storage
+    const authToken = localStorage.getItem("authToken");
+    const asNGO = localStorage.getItem("asNGO") === "true";
+    this.setState({
+      authed: authToken !== null,
+      asNGO,
+    });
+  }
+
+  renderLoginContent = () => {
+    if (!this.state.authed) {
+      return <LoginForm handleLoginSucces={this.handleLoginSucces} />;
+    }
+
+    if (this.state.asNGO) {
+      return <div>NGO page</div>;
+    }
+
+    return <div>Donator page</div>;
+  };
+
+  handleLoginSucces = (token, asNGO) => {
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("asNGO", asNGO);
+    this.setState({ authed: true, asNGO });
+  };
+
+  render() {
+    let logoUrl =
+      "https://lh3.googleusercontent.com/kR336RQiLl2T5YPjI24kCQUP8FfsSkCY0CVoMsPpC62hBam0qHQ-qyKtcsmlaxep2FiFKgE9mkw9axkxCIKa_Xt0JDNMEbzTACuiE9YXYzPdaNPYQB65os9dfPjY7RH2kbVikD7Vkw=w2400";
+    return (
+      <>
+        <header className="App-header">
+          <div className="header">
+            <div className="slogan">
+              <img src={logoUrl} className="logo" height={70} width={80} />
+              <div className="title">Donations</div>
+            </div>
+            {!this.state.authed && (
+              <div className="signUp-div">
+                <SignupForm />
+              </div>
+            )}
+          </div>
+        </header>
+        <div className="loginForm">{this.renderLoginContent()}</div>
+
+        <Footer />
+      </>
+    );
+  }
+  // return (
+  //   <div className="App">
+  //     <HeaderApp />
+
+  //     <div className="loginForm">
+  //       <LoginForm />
+  //     </div>
+  //     <Footer />
+  //   </div>
+  //   //JSX
+  // );
+}
+
+export default App;
